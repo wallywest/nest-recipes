@@ -1,0 +1,7 @@
+{
+"name":"action",
+"description":"action",
+"json_class" : "Chef::Role",
+"chef_type": "role",
+"run_list":["recipe[nest::action]"]
+}
