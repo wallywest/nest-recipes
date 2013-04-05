@@ -1,52 +1,34 @@
-app = node[:hive][:app].gsub(/-/,"_")
-repo = node[:hive][:repository]
-migration = node[:hive][:database]  && true
-compile = node[:hive][:compile] || true
-has_database = node[:hive][:database] || true
+app = node[:nest][:app].gsub(/-/,"_")
+repo = node[:nest][:repository]
+path = "#{node[:nest][:directory]}/#{app}"
+revision = node[:nest][:revision]
+migrate = node[:nest][:migrate]
+force = node[:nest][:force]
 
-if has_database
-  postgresql_database "#{app}" do
-    connection ({ :username => 'root', :password => 'root'})
+postgresql_database "#{app}" do
+  connection ({:host => "127.0.0.1", :port => 5432, :username => 'deployer', :password => 'deployer'})
+  action :create
+end
+
+%w{cached-copy config log pids bundle system}.each do |dir|
+  directory "#{path}/shared/#{dir}" do
+    owner "deployer"
+    group "deployer"
+    mode '0755'
+    recursive true
     action :create
   end
 end
 
-application "#{app}" do
+unicorn_config "#{path}/shared/unicorn.rb" do
   owner "deployer"
   group "deployer"
-  path "#{node[:hive][:directory]}/#{app}"
-  repository "#{repo}"
-  revision "#{node[:hive][:revisions]}"
-  migrate migration
-  purge_before_symlink ["log"]
-  symlinks "log"=> "log"
-  hive_deploy true
-  deploy_key node[:hive][:deploy_key]
-
-  rails do
-    bundler true
-    precompile_assets compile
-
-    db = "#{app}"
-    database do
-      adapter "postgresql"
-      database db
-      password 'deployer'
-      username 'deployer'
-    end
-  end
-
-  unicorn "#{node[:hive][:directory]}/#{app}/shared/unicorn.rb" do
-    app_name "#{app}"
-    worker_timeout node[:unicorn][:worker_timeout]
-    preload_app node[:unicorn][:preload_app]
-    worker_processes node[:unicorn][:worker_processes]
-    pid "/opt/www/#{app}/shared/pids/unicorn.pid"
-    stderr_path "/opt/www/#{app}/shared/log/unicorn.stderr.log"
-    stdout_path "/opt/www/#{app}/shared/log/unicorn.stdout.log"
-  end
-
-  nginx_load_balancer do
-     server_name "#{app}.websandbox.vail"
-  end
+  app_name "#{app}"
+  listen({"/tmp/#{app}.sock" => node[:unicorn][:options]})
+  worker_timeout node[:unicorn][:worker_timeout]
+  preload_app node[:unicorn][:preload_app]
+  worker_processes node[:unicorn][:worker_processes]
+  pid "/opt/www/#{app}/shared/pids/unicorn.pid"
+  stderr_path "/opt/www/#{app}/shared/log/unicorn.stderr.log"
+  stdout_path "/opt/www/#{app}/shared/log/unicorn.stdout.log"
 end

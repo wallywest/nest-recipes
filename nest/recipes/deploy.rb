@@ -1,34 +1,45 @@
-app = node[:hive][:app].gsub(/-/,"_")
-repo = node[:hive][:repository]
-rev = node[:hive][:revision] || "HEAD"
-migration = (node[:hive][:migrate] ||= true) && node[:hive][:database]
-compile = node[:hive][:compile] || false
-force = node[:hive][:force] || false
+app = node[:nest][:app].gsub(/-/,"_")
+repo = node[:nest][:repository]
+path = "#{node[:nest][:directory]}/#{app}"
+revision = node[:nest][:revision]
+migrate = node[:nest][:migrate]
+force = node[:nest][:force]
 
-application "#{app}" do
-  owner "deployer"
+deploy_revision "#{path}" do
+  action force ? :force_deploy : :deploy
+  user "deployer"
   group "deployer"
-  path "#{node[:hive][:directory]}/#{app}"
-  repository "#{repo}"
-  revision "#{rev}"
-  migrate migration
-  hive_deploy force
-  purge_before_symlink ["log"]
-  symlinks "log"=> "log"
-  deploy_key node[:hive][:deploy_key]
+  repository repo
+  revision revision
+  migrate migrate
+  environment "RAILS_ENV" => "production"
+  shallow_clone true
+  symlinks(
+    "log" => "log",
+  )
+  keep_releases 5
+  enable_submodules true
+  rollback_on_error true
 
-  db = "#{app}"
+  before_deploy do
+     puts "WTF BEFORE DEPLOY"
+  end
 
-  rails do
-    bundler true
-    precompile_assets compile
+  before_migrate do
 
-    database do
-      adapter "postgresql"
-      database db
-      password 'deployer'
-      username 'deployer'
+    template "#{path}/shared/config/database.yml" do
+      source "database.yml.erb"
+      owner "deployer"
+      group "deployer"
+      mode "644"
+      variables(
+        :host => "localhost",
+        :adapter => "postgresql",
+	:database => "#{app}",
+        :rails_env => "production"
+      )
     end
+
   end
 end
 
