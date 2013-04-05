@@ -6,7 +6,7 @@ migrate = node[:nest][:migrate]
 force = node[:nest][:force]
 key = node[:nest][:deploy_key]
 
-%w{cached-copy config log pids bundle system}.each do |dir|
+%w{cached-copy config log pids system}.each do |dir|
   directory "#{path}/shared/#{dir}" do
     owner "deployer"
     group "deployer"
@@ -17,13 +17,15 @@ key = node[:nest][:deploy_key]
 end
 
 application "#{app}" do
-  action :force_deploy 
+
+  action :force_deploy
   path "#{path}"
   owner "deployer"
   group "deployer"
   repository repo
   revision revision
   migrate migrate
+  migration_command "./bin/rake db:migrate"
   deploy_key key
 
   nest

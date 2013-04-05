@@ -2,6 +2,7 @@ site :opscode
 
 metadata
 
+cookbook "nodejs"
 cookbook "application"
 cookbook "database"
 cookbook "git"
@@ -12,3 +13,4 @@ cookbook "unicorn"
 cookbook "application_nginx"
 cookbook "vim"
 cookbook "build-essential"
+cookbook "rbenv", :git => "git://github.com/fnichol/chef-rbenv.git"
