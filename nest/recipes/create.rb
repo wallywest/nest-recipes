@@ -24,12 +24,13 @@ template "#{path}/shared/unicorn.rb" do
   source "unicorn.rb.erb"
   owner "deployer"
   group "deployer"
-  app_name "#{app}"
-  listen({"/tmp/#{app}.sock" => node[:unicorn][:options]})
-  worker_timeout node[:unicorn][:worker_timeout]
-  preload_app node[:unicorn][:preload_app]
-  worker_processes node[:unicorn][:worker_processes]
-  pid "/opt/www/#{app}/shared/pids/unicorn.pid"
-  stderr_path "/opt/www/#{app}/shared/log/unicorn.stderr.log"
-  stdout_path "/opt/www/#{app}/shared/log/unicorn.stdout.log"
+  variables({
+    :app_name => "#{app}",
+    :worker_timeout =>  node[:unicorn][:worker_timeout],
+    :preload_app => node[:unicorn][:preload_app],
+    :worker_processes => node[:unicorn][:worker_processes],
+    :pid => "/opt/www/#{app}/shared/pids/unicorn.pid",
+    :stderr_path => "/opt/www/#{app}/shared/log/unicorn.stderr.log",
+    :stdout_path => "/opt/www/#{app}/shared/log/unicorn.stdout.log"
+  })
 end
