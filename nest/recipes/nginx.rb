@@ -1,4 +1,4 @@
-include_recipe "nginx"
+include_recipe 'nginx'
 
 app = node[:nest][:app].gsub(/-/,"_")
 repo = node[:nest][:repository]

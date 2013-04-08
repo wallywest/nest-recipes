@@ -1,1 +1,0 @@
-include Chef::Resource::ApplicationBase
