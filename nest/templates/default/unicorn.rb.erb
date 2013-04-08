@@ -1,0 +1,57 @@
+# What ports/sockets to listen on, and what options for them.
+<%- if @working_directory %>
+working_directory '<%= @working_directory %>'
+<%- end %>
+
+listen "/tmp/<%=@app_name%>.unicorn.sock", :backlog => 64
+# What the timeout for killing busy workers is, in seconds
+timeout <%= @worker_timeout %>
+
+# Whether the app should be pre-loaded
+preload_app <%= @preload_app %>
+
+# How many worker processes
+worker_processes <%= @worker_processes %>
+
+<%- if @before_exec %>
+# What to do right before exec()-ing the new unicorn binary
+before_exec do |server|
+  <%= @before_exec %>
+end
+
+<%- end %>
+
+
+before_fork do |server,worker|
+   defined?(ActiveRecord::Base) and ActiveRecord::Base.connection.disconnect!
+   old_pid = "/opt/www/<%=@app_name%>/shared/pids/unicorn.pid.oldbin"
+   if File.exists?(old_pid) && server.pid != old_pid
+     begin
+      Process.kill("QUIT", File.read(old_pid).to_i)
+     rescue Errno::ENOENT, Errno::ESRCH
+      # someone else did our job for us
+     end
+   end
+end
+
+after_fork do |server, worker|
+  defined?(ActiveRecord::Base) and ActiveRecord::Base.establish_connection
+  child_pid = server.config[:pid].sub(/pid$/, "worker.#{worker.nr}.pid")
+  system("echo #{Process.pid} > #{child_pid}")
+end
+
+<%- if @pid %>
+# Where to drop a pidfile
+pid '<%= @pid %>'
+
+<%- end %>
+<%- if @stderr_path %>
+# Where stderr gets logged
+stderr_path '<%= @stderr_path %>'
+
+<%- end %>
+<%- if @stdout_path %>
+# Where stdout gets logged
+stdout_path '<%= @stdout_path %>'
+
+<%- end %>
