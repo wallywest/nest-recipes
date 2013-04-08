@@ -20,7 +20,8 @@ end
   end
 end
 
-unicorn_config "#{path}/shared/unicorn.rb" do
+template "#{path}/shared/unicorn.rb" do
+  source "unicorn.rb.erb"
   owner "deployer"
   group "deployer"
   app_name "#{app}"
