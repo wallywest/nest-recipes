@@ -4,45 +4,40 @@ path = "#{node[:nest][:directory]}/#{app}"
 revision = node[:nest][:revision]
 migrate = node[:nest][:migrate]
 force = node[:nest][:force]
+key = node[:nest][:deploy_key]
+seed = node[:nest][:seed]
+assets = node[:nest][:assets]
 
-deploy_revision "#{path}" do
-  action force ? :force_deploy : :deploy
-  user "deployer"
+%w{cached-copy config log pids system}.each do |dir|
+  directory "#{path}/shared/#{dir}" do
+    owner "deployer"
+    group "deployer"
+    mode '0755'
+    recursive true
+    action :create
+  end
+end
+
+application "#{app}" do
+
+  action :force_deploy
+  path "#{path}"
+  owner "deployer"
   group "deployer"
   repository repo
   revision revision
+  deploy_key key
+
   migrate migrate
-  environment "RAILS_ENV" => "production"
-  shallow_clone true
-  symlinks(
-    "log" => "log",
-  )
-  keep_releases 5
-  enable_submodules true
-  rollback_on_error true
+  migration_command "./bin/rake db:migrate"
+  deploy_key key
 
-  before_deploy do
-     puts "WTF BEFORE DEPLOY"
-  end
-
-  before_migrate do
-
-    template "#{path}/shared/config/database.yml" do
-      source "database.yml.erb"
-      owner "deployer"
-      group "deployer"
-      mode "644"
-      variables(
-        :host => "localhost",
-        :adapter => "postgresql",
-	:database => "#{app}",
-        :rails_env => "production"
-      )
-    end
-
+  nest do 
+   precompile_assets assets
+   seed seed
   end
 end
 
-unicorn_service "#{app}" do
-  action [:upgrade]
-end
+#unicorn_service "#{app}" do
+#  action [:upgrade]
+#end

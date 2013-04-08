@@ -5,6 +5,8 @@ revision = node[:nest][:revision]
 migrate = node[:nest][:migrate]
 force = node[:nest][:force]
 key = node[:nest][:deploy_key]
+seed = node[:nest][:seed]
+assets = node[:nest][:assets]
 
 %w{cached-copy config log pids system}.each do |dir|
   directory "#{path}/shared/#{dir}" do
@@ -24,9 +26,14 @@ application "#{app}" do
   group "deployer"
   repository repo
   revision revision
+  deploy_key key
+
   migrate migrate
   migration_command "./bin/rake db:migrate"
   deploy_key key
 
-  nest
+  nest do 
+   precompile_assets assets
+   seed seed
+  end
 end

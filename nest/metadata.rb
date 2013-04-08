@@ -6,4 +6,7 @@ description      "Installs/Configures nest"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 
 depends 'rbenv'
+depends 'postgresql'
+depends 'database'
+depends 'unicorn'
 depends 'application'

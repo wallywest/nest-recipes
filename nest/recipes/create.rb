@@ -10,7 +10,7 @@ postgresql_database "#{app}" do
   action :create
 end
 
-%w{cached-copy config log pids bundle system}.each do |dir|
+%w{cached-copy config log pids}.each do |dir|
   directory "#{path}/shared/#{dir}" do
     owner "deployer"
     group "deployer"

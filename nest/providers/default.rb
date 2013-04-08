@@ -36,12 +36,20 @@ action :before_migrate do
 end
 
 action :before_symlink do
-  compile_assets
+  if new_resource.precompile_assets
+    compile_assets
+  end
 end
+
 action :before_restart do
+  if new_resource.seed
+    run_db_seed
+  end
 end
+
 action :after_deploy do
 end
+
 action :after_restart do
 end
 
@@ -70,7 +78,7 @@ def setup_pg_config
 end
 
 def bundle_install_command
-  common_groups = %w{development test cucumber staging}
+  common_groups = "development test cucumber staging"
   rbenv_script "bundle install" do
     rbenv_version "1.9.3-p392"
     user          "deployer"
@@ -80,8 +88,17 @@ def bundle_install_command
   end
 end
 
+def run_db_seed
+  execute "./bin/rake db:seed" do
+    environment new_resource.environment
+    cwd new_resource.release_path
+    user "deployer"
+  end
+end
+
 def compile_assets
   execute "./bin/rake assets:precompile" do
+    environment new_resource.environment
     cwd new_resource.release_path
     user "deployer"
   end

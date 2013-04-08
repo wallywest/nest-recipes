@@ -75,43 +75,20 @@ Vagrant.configure("2") do |config|
     chef.add_recipe "postgresql::client"
     chef.json = {
       :nest => {
-        :repository => "git://github.com/wallywest/jchef.git",
-        :app => "jchef",
+        :repository => "git://github.com/wallywest/reducto.git",
+        :app => "reducto",
         :revision => "master",
         :migrate => true,
         :database => true,
-        :deploy_key => "-----BEGIN RSA PRIVATE KEY-----
-  MIIEowIBAAKCAQEA3Sr3IqzQ5soMzVbUSYxgrw4SPJkpP0lBjI1nnSi6SIX6kdgM
-  SyplRhiWYzj2JH26Ni/wd0/K8xU9rHeEmKjmvPtZhNO8j8/dDcD1DOKrXvvXGsTx
-  3KltJVEhwaE5txGR802I5GG3Z1UU/KLRg3HAf9/+UGDCxwbKuGqeKJIbq2rhLtHQ
-  FrxaD040rvcELNY+vinX1F4mGRs1ku6Dye+UZ45etcGnUUrYGMR2YAH3M3iG/emC
-  vBY0MlRqF7fwfoJUyFL0indXzbAvFHxsI741LiiVPjz0vNl2iGxdD3w2fxBVJcDR
-  TKMRfRvmEDKs0uIORoCjv1ORFV15NgrDs7cT0QIDAQABAoIBAGxrRpFCBHpOrC3x
-  FcokPbUzAa+hKX4zrCV5oESDlaY9v5LFRWmHk/Pj0706TDehRqqPn6Ltg8DcNcqZ
-  IHAxxEL6OG0L2xDoxiWa5MX3TCkY7d7akvIoQDAd8J1aKs/aliCebq/+UwkdxVb/
-  fhOgrMxDAwlmFbW5V6FF6than6PMrKiWp045bgiwvsJWWluI6dh4OgwA00IoCrZJ
-  qcTRGFyqdpKnhJo3A7IM7CNC1dH2vPOFIyNNpFfTw21WrAYE61b1bXY5RQKRiNPL
-  W0Hx/KW1X5nd5ULFGyb59f/vJqBIM5BWuff4uGHo/l7pw/takYvxMUP2HmD+Ro/L
-  ceEePc0CgYEA+Ju0VMuDdYLEjksRIXEryYbVdP71W8jjUWKbgwB++EPZUw/Ma3GX
-  LqeA/+B4+7SNGjwO5IXk/RfdYUBvkOz0iFY9HwY4wR02sRRCJQWQ1A5l21fNUcHy
-  rOPOx8lt60ixTf4Yyg4FXCg9KsefbmJYOaL5bAKRVC9tSWb5AZN/TbsCgYEA475l
-  mq6nWzaLdIgMs7qAFDrf/vCzuQm+XeERWea/p5+yT3lh0ynd1Mw/3h4S+FmRQWAW
-  2otymTz3mizi3H3Cyx2rkH9OZWHgzpclr+ZNEqdn+MzzAp6DZAmhN4TB/fzG8+Yl
-  YmOn0T9ogKcmloVlLUhrfHKJyYXwIGXAVQKpheMCgYAQcMuWJ/dDmChDeLdjTMam
-  hyIqoIm9TiWqRikemrPK20HN+md8W4Cx9yXSxhd6HdCPAZXCixA/pIphWg+GuATb
-  10gnexPZwYLSZxKQvDN9so4N2Vqco4TW5iHQmIOKYb5H+BvPkOnN1GNnJthmRl6r
-  QRnZiLnvpUtG5WZmMkji7QKBgH7F4IcfS7ehgDVo+jEd0ufv8fpXAKQzAU3+2ArE
-  QNFNOxO0TLkf6ATpgW/iK8slCI9srqwOzcbxQh8Hd20ncERiirsPspMKzfoR9v+Y
-  YjTNDTpY07kUha0tExn1g4sfp5vi89J2CNeYxVJAOWG2daCkXHjUxVBxhz5xhYOM
-  zNLjAoGBAMDScQClWPOMBxYPEKUP944CRYcpRn9UUH9SKVCVB2uHVIMP7D6bKCse
-  th1oYRr/bBZzPTq3STKj0MqX8VXzhOuWkot1+1notQnrr34gtG0AP0uOXLkt/aoy
-  VVHQWQCHrnY/s3GmtlcDse76nZRqh54FXoWkUimXmZpxc3J3YTC2
-  -----END RSA PRIVATE KEY-----"
+        :seed => true,
+        :precompile_assets => true
+      },
+      :unicorn => {
+       :action => "start"
       }
     }
-
-      chef.run_list = [
-        "recipe[nest::justin]"
-      ]
+    chef.run_list = [
+      "recipe[nest::destroy]"
+    ]
     end
 end
