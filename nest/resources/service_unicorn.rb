@@ -1,5 +1,5 @@
 actions :start, :stop, :enable, :disable, :restart, :upgrade
 
-attribute :action, :kind_of => [StringClass], :default => nil
+attribute :service_name,:name_attribute => true
 attribute :running, :default => false
 attribute :enabled, :default => false

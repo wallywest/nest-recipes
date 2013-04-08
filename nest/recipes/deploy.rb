@@ -7,6 +7,7 @@ force = node[:nest][:force]
 key = node[:nest][:deploy_key]
 seed = node[:nest][:seed]
 assets = node[:nest][:assets]
+action = node[:unicorn][:action]
 
 %w{cached-copy config log pids system}.each do |dir|
   directory "#{path}/shared/#{dir}" do
@@ -38,6 +39,6 @@ application "#{app}" do
   end
 end
 
-#unicorn_service "#{app}" do
-#  action [:upgrade]
-#end
+nest_service_unicorn "#{app}" do
+  action action
+end

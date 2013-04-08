@@ -3,5 +3,5 @@
 "description":"create",
 "json_class" : "Chef::Role",
 "chef_type": "role",
-"run_list":["recipe[nest::create], recipe[nest::deploy]"]
+"run_list":["recipe[nest::create], recipe[nest::deploy] "recipe[nest::nginx]"]
 }

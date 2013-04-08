@@ -4,7 +4,7 @@ require 'chef/mixin/language'
 include Chef::Mixin::ShellOut
 
 def load_current_resource
-  @current_resource = Chef::Resource::UnicornService.new(new_resource.name)
+  @current_resource = Chef::Resource::NestServiceUnicorn.new(new_resource.name)
   @current_resource.service_name(new_resource.service_name)
   
   Chef::Log.debug("Checking status of service #{new_resource.service_name}")

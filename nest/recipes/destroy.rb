@@ -1,13 +1,13 @@
 app = node[:nest][:app].gsub(/-/,"_")
 repo = node[:nest][:repository]
 
-#unicorn_service "#{app}" do
-#  action [:stop]
-#end
+nest_service_unicorn "#{app}" do
+  action [:stop]
+end
 
-#nginx_site "#{app}.conf" do
-#  enable false
-#end
+nginx_site "#{app}.conf" do
+  enable false
+end
 
 directory "#{node[:nest][:directory]}/#{app}" do
   recursive true
